@@ -1,0 +1,594 @@
+<title>IRIX CASH</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Layout: рабочий стол бухгалтера — шапка IRIX, полоса загрузки и сверки, затем лента операций и блок «с топорка» */
+:root{
+  --bg:#F3F6F5; --surface:#FFFFFF; --surface-2:#EAF0EE; --line:#D5DFDB;
+  --fg:#0D1B16; --muted:#5A6B65; --accent:#00B874; --accent-strong:#008F5A; --accent-soft:#D6F7E9;
+  --ink:#0D1B16; --on-ink:#F2F2F2;
+  --good:#0E8A55; --good-bg:#DDF5EA; --warn:#A35C00; --warn-bg:#FCEFD9; --bad:#B42318; --bad-bg:#FDE4E1;
+  --lena:#6A4BC4; --lena-bg:#ECE6FB;
+  --f-display:"Unbounded","Onest",system-ui,sans-serif;
+  --f-body:"Onest",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:12px;
+  --hero:#0D1B16; --hero-2:#16302A; --hero-fg:#F2F2F2; --hero-muted:#9FB5AD; --brand:#00E38A;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1B16; --surface:#151A19; --surface-2:#1C2522; --line:#2A3632;
+  --fg:#F2F2F2; --muted:#9AABA4; --accent:#00E38A; --accent-strong:#00E38A; --accent-soft:#0F3527;
+  --ink:#00E38A; --on-ink:#0D1B16;
+  --good:#3DDC97; --good-bg:#103326; --warn:#F2B451; --warn-bg:#3A2A10; --bad:#FF8A7A; --bad-bg:#3A1714;
+  --lena:#B9A4FF; --lena-bg:#2A2244; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1B16; --surface:#151A19; --surface-2:#1C2522; --line:#2A3632;
+  --fg:#F2F2F2; --muted:#9AABA4; --accent:#00E38A; --accent-strong:#00E38A; --accent-soft:#0F3527;
+  --ink:#00E38A; --on-ink:#0D1B16;
+  --good:#3DDC97; --good-bg:#103326; --warn:#F2B451; --warn-bg:#3A2A10; --bad:#FF8A7A; --bad-bg:#3A1714;
+  --lena:#B9A4FF; --lena-bg:#2A2244; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.45}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:20px;padding-block:20px 48px;display:flex;flex-direction:column;gap:18px}
+header.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:radial-gradient(120% 140% at 100% 0%,var(--hero-2) 0%,var(--hero) 60%);color:var(--hero-fg);border-radius:16px;padding:20px 22px;position:relative;overflow:hidden}
+header.top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,#00E38A,#00A868 60%,transparent)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn.ghost{background:transparent;color:var(--hero-fg);border-color:rgba(242,242,242,.25)}
+.btn.ghost:hover{border-color:var(--brand);color:var(--brand)}
+header.top .btn.primary{background:var(--brand);color:#0D1B16;border-color:var(--brand)}
+.btn.accent{background:var(--accent-soft);color:var(--accent-strong);border-color:transparent}
+.btn.accent:hover{border-color:var(--accent)}
+.brand{display:flex;align-items:center;gap:12px}
+.brand svg{width:34px;height:38px;flex:none}
+.brand h1{font-family:var(--f-display);font-weight:700;font-size:26px;letter-spacing:.03em;margin:0;line-height:1}
+.brand h1 b{color:var(--brand);font-weight:700}
+.brand .sub{font-size:12.5px;color:var(--hero-muted);margin-top:6px}
+.brand svg{width:40px;height:44px}
+.top .spacer{flex:1}
+.btn{font:inherit;font-weight:600;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:9px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{border-color:var(--accent)}
+.btn:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.primary{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.small{padding:5px 10px;font-size:12.5px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px}
+@media (max-width:860px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;min-width:0}
+.panel h2{font-family:var(--f-display);font-size:13px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin:0 0 12px;color:var(--muted)}
+.drop{border:1.5px dashed var(--line);border-radius:var(--r);padding:22px 18px;display:flex;align-items:center;gap:16px;cursor:pointer;background:var(--surface-2);transition:border-color .15s}
+.drop:hover,.drop.over{border-color:var(--accent)}
+.drop .ic{width:44px;height:52px;flex:none;border-radius:6px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--accent-strong)}
+.drop strong{display:block;font-size:15px}
+.drop span{color:var(--muted);font-size:13px}
+.files{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.file{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:12px 14px;border:1px solid var(--line);border-radius:8px}
+.file .nm{font-weight:600;overflow-wrap:anywhere}
+.file .meta{color:var(--muted);font-size:12.5px;grid-column:1/-1}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.chip.ok{background:var(--good-bg);color:var(--good)}
+.chip.bad{background:var(--bad-bg);color:var(--bad)}
+.chip.demo{background:var(--warn-bg);color:var(--warn)}
+.chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.totals{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+
+@media (max-width:560px){.totals{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tot .v{font-size:15px}
+.tot{padding:12px 12px 12px 14px;border-radius:10px;background:var(--surface-2);position:relative}
+.tot::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:2px;background:var(--dot,var(--muted))}
+.tot.lena{--dot:var(--lena)} .tot.ret{--dot:var(--warn)} .tot.inc{--dot:var(--good)} .tot.cash{--dot:var(--accent-strong)} .tot.exp{--dot:var(--bad)}
+.tot .k{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.tot .v{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:4px;white-space:nowrap}
+.recon{margin-top:14px;display:flex;flex-direction:column}
+.recon .r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:7px 0;border-bottom:1px solid var(--line);align-items:center}
+.recon .r:last-child{border-bottom:0}
+.recon .r .n{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.recon .r.ex{color:var(--muted);font-size:13px}
+.recon .r.big{font-weight:700;font-size:15px}
+.recon input{font:inherit;font-variant-numeric:tabular-nums;text-align:right;width:150px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--warn-bg);color:var(--fg)}
+.diff-ok{color:var(--good)} .diff-bad{color:var(--bad)}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:980px;font-size:13px}
+th{position:sticky;top:0;background:var(--surface-2);text-align:left;font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
+td.num.in{color:var(--good)}
+td.date{white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--muted)}
+td.bank{color:var(--muted);font-size:12.5px;max-width:320px}
+td input[type=text],td select{font:inherit;width:100%;padding:5px 7px;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--fg)}
+td input[type=text]:hover,td select:hover{border-color:var(--line)}
+td input[type=text]:focus{border-color:var(--accent);background:var(--surface)}
+td select{cursor:pointer}
+td select.pill{border-radius:999px;padding:4px 10px;background:var(--surface-2);font-weight:600;font-size:12.5px;width:auto;min-width:118px}
+td select.c-exp{color:var(--bad)}
+td select.c-lena{background:var(--lena-bg)} td select.c-inc{background:var(--good-bg)} td select.c-ret{background:var(--warn-bg)} td select.c-cash{background:var(--accent-soft)} td select.c-exp{background:var(--bad-bg)}
+tr.manual td{background:color-mix(in srgb,var(--accent-soft) 45%,transparent)}
+tr:hover td{background:color-mix(in srgb,var(--surface-2) 70%,transparent)}
+td input.amt{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;width:120px;border-color:var(--line)!important;background:var(--surface)!important}
+td input[type=date]{font:inherit;font-size:12.5px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg)}
+td.no{color:var(--muted);font-variant-numeric:tabular-nums;width:34px}
+td.empty{text-align:center;color:var(--muted);padding:28px}
+.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 7px}
+.ops-tools{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+td select.c-lena{color:var(--lena);font-weight:600}
+td select.c-inc{color:var(--good);font-weight:600}
+td select.c-ret{color:var(--warn);font-weight:600}
+td select.c-cash{color:var(--accent-strong);font-weight:600}
+td input.who{width:70px}
+td.chk{text-align:center}
+input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent-strong);cursor:pointer}
+.head-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}
+.head-row h2{margin:0}
+.hint{color:var(--muted);font-size:12.5px}
+details.rules{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+details.rules summary{cursor:pointer;padding:14px 18px;font-weight:600;list-style:none;display:flex;align-items:center;gap:10px}
+details.rules summary::before{content:"›";display:inline-block;transition:transform .15s;color:var(--accent-strong);font-size:18px;line-height:1}
+details.rules[open] summary::before{transform:rotate(90deg)}
+.rules-body{padding:0 18px 18px;display:flex;flex-direction:column;gap:12px}
+.rules-body table{min-width:720px}
+.rules-body td input[type=text]{border-color:var(--line)}
+.rules-actions{display:flex;gap:8px;flex-wrap:wrap}
+.del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:18px;padding:2px 8px;border-radius:6px}
+.del:hover{color:var(--bad);background:var(--bad-bg)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--on-ink);padding:10px 16px;border-radius:8px;font-weight:600;box-shadow:0 6px 24px rgba(0,0,0,.2);max-width:calc(100% - 32px)}
+.err{background:var(--bad-bg);color:var(--bad);padding:10px 12px;border-radius:8px;font-size:13px}
+footer{color:var(--muted);font-size:12px;text-align:center}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 140 155" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00E38A"/><stop offset=".5" stop-color="#00C97C"/><stop offset="1" stop-color="#00A868"/></linearGradient></defs><path d="M15,0 L140,0 L77.5,63 Z" fill="url(#g)"/><path d="M0,15 L140,155 L96,155 L47.5,107.5 L0,155 Z" fill="url(#g)"/></svg>
+      <div><h1>IRIX <b>CASH</b></h1><div class="sub">Отчёт по кассе из выписки СберБанка</div></div>
+    </div>
+    <div class="spacer"></div>
+    <div class="actions">
+      <button class="btn ghost" id="btnClear" type="button">Очистить</button>
+      <button class="btn ghost" id="btnPrint" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2M6 14h12v7H6z"/></svg>Печать</button>
+      <button class="btn primary" id="btnXlsx" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 21h16"/></svg>Скачать в Excel</button>
+    </div>
+  </header>
+
+  <div class="grid2">
+    <section class="panel">
+      <h2>Выписка</h2>
+      <label class="drop" id="drop" for="file">
+        <div class="ic">PDF</div>
+        <div><strong>Загрузите PDF-выписку СберБанка</strong><span>Перетащите файл сюда или нажмите. Можно несколько выписок сразу. Файл обрабатывается у вас в браузере и никуда не отправляется.</span></div>
+      </label>
+      <input type="file" id="file" accept="application/pdf,.pdf" multiple hidden>
+      <div id="err" class="err" hidden></div>
+      <div class="files" id="files"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Итоги</h2>
+      <div class="totals" id="totals"></div>
+      <div class="recon" id="recon"></div>
+    </section>
+  </div>
+
+  <section>
+    <div class="head-row" style="margin-bottom:10px">
+      <h2 style="font-family:var(--f-display);font-size:13px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Операции</h2>
+      <div class="ops-tools"><span class="hint">Комментарий, колонку и «с топорка» можно править. Свои расходы добавляйте кнопкой справа.</span>
+      <button class="btn small accent" id="btnAdd" type="button">+ Добавить расход</button></div>
+    </div>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>№</th><th>Дата</th><th style="text-align:right">Сумма</th><th>Колонка</th><th>Комментарий</th><th>Комментарий банка</th><th>Чьё</th><th title="Поступление учитывается как полученное с топорка">С топорка</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <details class="rules" id="rulesBox">
+    <summary>Правила разноски <span class="hint" style="font-weight:400">— как операции получают комментарий и колонку</span></summary>
+    <div class="rules-body">
+      <div class="hint">Правило срабатывает, если текст операции (категория + описание банка) содержит фразу. Проверяются сверху вниз, срабатывает первое. Правила запоминаются в этом браузере.</div>
+      <div class="tblwrap">
+        <table>
+          <thead><tr><th>Если в тексте есть</th><th>Комментарий</th><th>Колонка</th><th>Чьё</th><th>С топорка</th><th></th></tr></thead>
+          <tbody id="rulesRows"></tbody>
+        </table>
+      </div>
+      <div class="rules-actions">
+        <button class="btn small" id="ruleAdd" type="button">Добавить правило</button>
+        <button class="btn small primary" id="ruleApply" type="button">Применить к операциям</button>
+        <button class="btn small" id="ruleReset" type="button">Вернуть стандартные</button>
+      </div>
+    </div>
+  </details>
+
+  <footer>IRIX — код. данные. смысл. результат. · Irina Romanova</footer>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.min.js"></script>
+<script>
+// ===PARSER START===
+const RX_DATE=/^\d\d\.\d\d\.\d{4}$/, RX_TIME=/^\d\d:\d\d$/, RX_AMT=/^[+\-]?\d{1,3}(?:[ \u00a0]\d{3})*,\d\d$/;
+function toNum(s){return parseFloat(s.replace(/[ \u00a0+]/g,'').replace(',','.'))}
+function pageLines(items){
+  const its=items.filter(i=>i.s&&i.s.trim()).map(i=>({x:i.x,y:i.y,w:i.w,s:i.s.replace(/\u00a0/g,' ').trim()}));
+  its.sort((a,b)=>b.y-a.y||a.x-b.x);
+  const lines=[];
+  for(const it of its){
+    const L=lines.find(l=>Math.abs(l.y-it.y)<2);
+    if(L)L.items.push(it);else lines.push({y:it.y,items:[it]});
+  }
+  lines.sort((a,b)=>b.y-a.y);
+  for(const l of lines){
+    l.items.sort((a,b)=>a.x-b.x);
+    const m=[];
+    for(const it of l.items){
+      const p=m[m.length-1];
+      if(p&&it.x-(p.x+p.w)<0.8){p.s+=it.s;p.w=it.x+it.w-p.x}else m.push({...it});
+    }
+    l.items=m;l.text=m.map(i=>i.s).join(' ');
+  }
+  return lines;
+}
+function parseSberStatement(pages){
+  const head={},ops=[];
+  const all=pages.map(pageLines);
+  const flat=[].concat(...all);
+  const txt=flat.map(l=>l.text).join('\n');
+  let m;
+  if(m=txt.match(/За период\s+(\d\d\.\d\d\.\d{4})\s*[—–-]\s*(\d\d\.\d\d\.\d{4})/)){head.from=m[1];head.to=m[2]}
+  const rest=[...txt.matchAll(/Остаток на\s+(\d\d\.\d\d\.\d{4})\s+([\d \u00a0]+,\d\d)/g)];
+  if(rest[0])head.open=toNum(rest[0][2]);
+  if(rest[1])head.close=toNum(rest[1][2]);
+  if(m=txt.match(/Пополнение\s+([\d ]+,\d\d)/))head.inc=toNum(m[1]);
+  if(m=txt.match(/Списание\s+([\d ]+,\d\d)/))head.out=toNum(m[1]);
+  if(m=txt.match(/Номер счёта\s+([\d ]{10,})/))head.account=m[1].replace(/\s/g,'');
+  const oi=flat.findIndex(l=>l.items.some(i=>i.s==='Владелец счёта'));
+  if(oi>=0){const lx=flat[oi].items.find(i=>i.s==='Владелец счёта').x;
+    for(let k=oi+1;k<Math.min(oi+4,flat.length);k++){const it=flat[k].items.find(i=>Math.abs(i.x-lx)<3);if(it){head.owner=it.s;break}}}
+  let cur=null,state=null,descX=0,lastY=0;
+  for(const lines of all){
+    state=null;
+    for(const l of lines){
+      const it=l.items;
+      if(it.length>=4&&RX_DATE.test(it[0].s)&&RX_TIME.test(it[1].s)){
+        const amts=it.map((x,i)=>({x,i})).filter(o=>o.i>=2&&RX_AMT.test(o.x.s));
+        if(amts.length>=2){
+          const a=amts[amts.length-2],b=amts[amts.length-1];
+          const [d,mo,y]=it[0].s.split('.').map(Number);
+          cur={date:new Date(Date.UTC(y,mo-1,d)),dateStr:it[0].s,time:it[1].s,
+            cat:it.slice(2,a.i).map(x=>x.s).join(' ').trim(),inc:a.x.s.startsWith('+'),
+            amt:toNum(a.x.s),bal:toNum(b.x.s),desc:''};
+          descX=it[2].x;ops.push(cur);state='await';continue;
+        }
+      }
+      if(cur&&state==='await'&&RX_DATE.test(it[0].s)&&!RX_TIME.test(it[1]?.s||'')){
+        cur.desc=it.filter(x=>x.x>=descX-3&&x.x<descX+250).map(x=>x.s).join(' ');lastY=l.y;state='desc';continue;
+      }
+      if(cur&&state==='desc'&&!RX_DATE.test(it[0].s)&&Math.abs(it[0].x-descX)<4&&lastY-l.y<14){
+        cur.desc+=' '+it.map(x=>x.s).join(' ');lastY=l.y;continue;
+      }
+      state=null;
+    }
+  }
+  for(const o of ops)o.desc=o.desc.replace(/\s+/g,' ').trim();
+  return {head,ops};
+}
+// ===PARSER END===
+
+
+const COLS={lena:'Лена',ret:'Возвраты',inc:'Поступления',cash:'Касса',exp:'Расходы'};
+const DEFAULT_RULES=[
+  {match:'Елена Владиславовна',comment:'лена',kind:'lena',who:'лена',topork:false},
+  {match:'Ozon Bank',comment:'озон',kind:'auto',who:'топ',topork:true},
+  {match:'Выдача наличных',comment:'касса (снятие наличных)',kind:'cash',who:'топ',topork:false},
+  {match:'MARKET',comment:'яндекс маркет',kind:'auto',who:'топ',topork:false},
+  {match:'Сервисы Яндекса',comment:'яндекс',kind:'auto',who:'топ',topork:false},
+  {match:'KOMISSIYA',comment:'моб банк',kind:'auto',who:'топ',topork:false},
+  {match:'MTS',comment:'мтс связь',kind:'auto',who:'топ',topork:false},
+  {match:'Avito',comment:'авито',kind:'auto',who:'топ',topork:false},
+  {match:'PEREKRESTOK',comment:'перекресток',kind:'auto',who:'топ',topork:false},
+  {match:'Заработная плата',comment:'зарплата',kind:'auto',who:'топ',topork:false},
+  {match:'T-Bank',comment:'т-банк',kind:'auto',who:'топ',topork:false}
+];
+const RULES_KEY='irixcash.rules.v1';
+function loadRules(){try{const r=JSON.parse(localStorage.getItem(RULES_KEY));if(Array.isArray(r))return r}catch(e){}return DEFAULT_RULES.map(r=>({...r}))}
+function saveRules(){try{localStorage.setItem(RULES_KEY,JSON.stringify(rules))}catch(e){}}
+let rules=loadRules();
+
+const DEMO={files:[{name:'Пример выписки.pdf',demo:true,head:{from:'01.09.2026',to:'30.09.2026',owner:'Пример: владелец счёта',account:'40817810000000000000',open:20000,close:43550,inc:330000,out:306450}}],
+ ops:[
+  ['01.09.2026','10:12','Перевод СБП','Перевод из Ozon Bank (Ozon). Операция по счету ****0000',true,150000],
+  ['02.09.2026','12:02','Выдача наличных','Банкомат №60000001. Операция по карте ****0000',false,150000],
+  ['05.09.2026','09:38','Перевод с карты','Перевод для М. Елена Владиславовна. Операция по счету ****0000',false,100000],
+  ['08.09.2026','12:44','Перевод на карту','Перевод от П. Пётр Петрович. Операция по счету ****0000',true,60000],
+  ['11.09.2026','11:26','Оплата по QR–коду СБП','YM*Avito. Операция по карте ****0000',false,2950],
+  ['15.09.2026','14:32','Возврат, отмена операции','YANDEX*5399*MARKET MOSCOW RUS. Операция по карте ****0000',true,3500],
+  ['18.09.2026','12:47','Перевод СБП','Перевод из Ozon Bank (Ozon). Операция по счету ****0000',true,116500],
+  ['30.09.2026','10:04','Коммунальные платежи, связь, интернет.','MTS MOSCOW RUS. Операция по карте ****0000',false,500],
+  ['30.09.2026','18:41','Выдача наличных','Банкомат №60000001. Операция по карте ****0000',false,53000]
+ ].map(([d,t,c,ds,inc,a])=>{const [dd,mm,yy]=d.split('.').map(Number);return{date:new Date(Date.UTC(yy,mm-1,dd)),dateStr:d,time:t,cat:c,desc:ds,inc,amt:a,file:0}})};
+
+let state={files:[],rows:[],fact1c:'',demo:false};
+
+const fmt=n=>(n<0?'−':'')+Math.abs(n).toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});
+const r2=n=>Math.round(n*100)/100;
+const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function toast(t){const el=$('toast');el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,3200)}
+
+function bankComment(o){return (o.cat.replace(/\.+$/,'')+'. '+o.desc.replace(/\.?\s*Операция по (карте|счету|счёту)\s*\*+\d+\.?/i,'')).trim()}
+function fallbackComment(o){
+  const m=o.desc.match(/(?:от|для)\s+([А-ЯЁA-Z]\.\s*[А-ЯЁA-Zа-яёa-z\-]+\s+[А-ЯЁA-Zа-яёa-z\-]+)/);
+  if(m)return m[1];
+  return o.desc.replace(/\.?\s*Операция по (карте|счету|счёту)\s*\*+\d+\.?/i,'').trim()||o.cat;
+}
+function classify(o){
+  const text=(o.cat+' '+o.desc).toLowerCase();
+  const rule=rules.find(r=>r.match&&text.includes(r.match.toLowerCase()));
+  const isRet=o.inc&&/возврат|отмена/i.test(o.cat);
+  let comment=rule?rule.comment:fallbackComment(o);
+  if(isRet&&rule)comment+=' возврат';
+  const col=rule&&rule.kind==='lena'?'lena':rule&&rule.kind==='cash'&&!o.inc?'cash':isRet?'ret':o.inc?'inc':'exp';
+  return{comment,col,who:rule?.who||(col==='lena'?'лена':'топ'),topork:col==='inc'&&!!rule?.topork};
+}
+function buildRows(ops){
+  return ops.map((o,i)=>({...o,id:i,bank:bankComment(o),...classify(o)}))
+    .sort((a,b)=>a.date-b.date||a.time.localeCompare(b.time));
+}
+function signed(r){return r.col==='lena'||r.col==='exp'||r.col==='cash'?-r.amt:r.amt}
+
+function calc(){
+  const t={lena:0,ret:0,inc:0,cash:0,exp:0};
+  for(const r of state.rows)t[r.col]+=signed(r);
+  for(const k in t)t[k]=r2(t[k]);
+  const ex={};
+  for(const r of state.rows)if(r.col==='inc'&&!r.topork){ex[r.comment]=(ex[r.comment]||0)+r.amt}
+  const exList=Object.entries(ex).map(([k,v])=>[k,r2(v)]);
+  const topork=r2(t.inc-exList.reduce((s,[,v])=>s+v,0));
+  return{t,exList,topork};
+}
+
+function renderFiles(){
+  const box=$('files');box.innerHTML='';
+  state.files.forEach((f,i)=>{
+    const h=f.head,ops=state.rows.filter(r=>r.file===i);
+    const inc=r2(ops.filter(r=>r.inc).reduce((s,r)=>s+r.amt,0)),out=r2(ops.filter(r=>!r.inc).reduce((s,r)=>s+r.amt,0));
+    let chip;
+    if(f.demo)chip='<span class="chip demo">Пример — загрузите свою выписку</span>';
+    else if(h.inc!=null&&h.out!=null){
+      const okT=Math.abs(inc-h.inc)<0.01&&Math.abs(out-h.out)<0.01;
+      const okB=h.open==null||h.close==null||Math.abs(r2(h.open+inc-out)-h.close)<0.01;
+      chip=okT&&okB?'<span class="chip ok">Сходится с выпиской</span>':`<span class="chip bad">Расхождение: пополнение ${fmt(inc-h.inc)}, списание ${fmt(out-h.out)}</span>`;
+    }else chip='<span class="chip bad">Не найдены итоги выписки</span>';
+    const el=document.createElement('div');el.className='file';
+    el.innerHTML=`<div class="nm">${esc(h.owner||f.name)}</div><div>${chip}</div>
+      <div class="meta">${h.from?`Период ${h.from} — ${h.to}`:''}${h.account?` · счёт ****${h.account.slice(-4)}`:''} · операций: ${ops.length}<br>
+      Остаток на начало ${h.open!=null?fmt(h.open):'—'} · пополнение ${fmt(inc)} · списание ${fmt(out)} · остаток на конец ${h.close!=null?fmt(h.close):'—'}</div>`;
+    box.appendChild(el);
+  });
+}
+function renderTotals(){
+  const {t,exList,topork}=calc();
+  $('totals').innerHTML=Object.keys(COLS).map(k=>`<div class="tot ${k}"><div class="k">${COLS[k]}</div><div class="v">${fmt(t[k])}</div></div>`).join('');
+  const f1=parseFloat(String(state.fact1c).replace(/\s/g,'').replace(',','.'));
+  const has=!isNaN(f1);const d=has?r2(topork-f1):null;
+  $('recon').innerHTML=`<div class="r"><span>Всего поступлений по выписке</span><span class="n">${fmt(t.inc)}</span></div>
+    ${exList.map(([k,v])=>`<div class="r ex"><span>не учтено: ${esc(k)}</span><span class="n">${fmt(-v)}</span></div>`).join('')}
+    <div class="r big"><span>Итого получено с топорка</span><span class="n">${fmt(topork)}</span></div>
+    <div class="r"><label for="fact1c">По данным 1С получено с топорка</label><input id="fact1c" inputmode="decimal" placeholder="введите сумму" value="${esc(state.fact1c)}"></div>
+    <div class="r big"><span>Разница</span><span class="n ${has?(Math.abs(d)<0.01?'diff-ok':'diff-bad'):''}" id="diffv">${has?fmt(d):'—'}</span></div>`;
+  $('fact1c').addEventListener('change',e=>{state.fact1c=e.target.value;renderTotals()});
+}
+function isoDate(d){return d.toISOString().slice(0,10)}
+function renderRows(){
+  const tb=$('rows');
+  if(!state.rows.length){tb.innerHTML='<tr><td colspan="9" class="empty">Загрузите PDF-выписку или добавьте расход вручную</td></tr>';return}
+  tb.innerHTML=state.rows.map((r,i)=>{
+    const sign=(r.col==='inc'||r.col==='ret')?'+':'−';
+    const amt=r.manual
+      ?`<td class="num"><input type="text" inputmode="decimal" class="amt" id="am-${r.id}" data-f="amt" value="${r.amt?String(r.amt).replace('.',','):''}" placeholder="0,00"></td>`
+      :`<td class="num ${r.inc?'in':''}">${sign}${Math.abs(r.amt).toLocaleString('ru-RU',{minimumFractionDigits:2})}</td>`;
+    const date=r.manual?`<td><input type="date" id="dt-${r.id}" data-f="date" value="${isoDate(r.date)}"></td>`:`<td class="date">${r.dateStr}</td>`;
+    const bank=r.manual?`<td class="bank"><input type="text" id="bk-${r.id}" data-f="bank" value="${esc(r.bank)}" placeholder="описание (необязательно)"></td>`:`<td class="bank">${esc(r.bank)}</td>`;
+    return `<tr data-i="${i}" class="${r.manual?'manual':''}">
+    <td class="no">${i+1}</td>${date}${amt}
+    <td><select id="col-${r.id}" class="pill c-${r.col}" data-f="col">${Object.entries(COLS).map(([k,v])=>`<option value="${k}" ${k===r.col?'selected':''}>${v}</option>`).join('')}</select></td>
+    <td><input type="text" id="cm-${r.id}" data-f="comment" value="${esc(r.comment)}" placeholder="комментарий"></td>
+    ${bank}
+    <td><input type="text" class="who" id="who-${r.id}" data-f="who" value="${esc(r.who)}"></td>
+    <td class="chk"><input type="checkbox" id="tp-${r.id}" data-f="topork" ${r.topork?'checked':''} ${r.col==='inc'?'':'disabled'} aria-label="С топорка"></td>
+    <td>${r.manual?`<button class="del" type="button" data-delrow="${i}" aria-label="Удалить операцию" title="Удалить">×</button>`:'<span class="tag" title="Из выписки банка">банк</span>'}</td>
+  </tr>`}).join('');
+}
+function sortRows(){state.rows.sort((a,b)=>a.date-b.date||a.time.localeCompare(b.time))}
+let manualSeq=100000;
+function addManual(){
+  const last=state.rows.length?state.rows[state.rows.length-1].date:new Date(Date.UTC(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()));
+  const r={id:manualSeq++,manual:true,date:new Date(last),dateStr:'',time:'99:99',cat:'',desc:'',bank:'',inc:false,amt:0,col:'exp',comment:'',who:'топ',topork:false,file:-1};
+  r.dateStr=r.date.toLocaleDateString('ru-RU',{timeZone:'UTC'});
+  state.rows.push(r);sortRows();renderRows();renderTotals();
+  const el=$('am-'+r.id);if(el){el.focus();el.scrollIntoView({block:'center',behavior:'smooth'})}
+}
+$('btnAdd').onclick=addManual;
+$('rows').addEventListener('click',e=>{const b=e.target.closest('[data-delrow]');if(!b)return;state.rows.splice(+b.dataset.delrow,1);renderRows();renderTotals();toast('Операция удалена')});
+$('rows').addEventListener('change',e=>{
+  const tr=e.target.closest('tr');if(!tr)return;const r=state.rows[+tr.dataset.i];const f=e.target.dataset.f;
+  if(f==='topork')r.topork=e.target.checked;
+  else if(f==='col'){r.col=e.target.value;if(r.manual)r.inc=r.col==='inc'||r.col==='ret';if(r.col!=='inc')r.topork=false;if(r.col==='lena'&&r.who==='топ')r.who='лена';renderRows()}
+  else if(f==='amt'){const v=parseFloat(e.target.value.replace(/[\s ]/g,'').replace(',','.'));r.amt=isNaN(v)?0:Math.abs(r2(v));e.target.value=r.amt?String(r.amt).replace('.',','):''}
+  else if(f==='date'){if(e.target.value){const [y,m,d]=e.target.value.split('-').map(Number);r.date=new Date(Date.UTC(y,m-1,d));r.dateStr=r.date.toLocaleDateString('ru-RU',{timeZone:'UTC'});sortRows();renderRows()}}
+  else r[f]=e.target.value;
+  renderTotals();
+});
+function renderAll(){renderFiles();renderRows();renderTotals()}
+
+function renderRules(){
+  $('rulesRows').innerHTML=rules.map((r,i)=>`<tr data-i="${i}">
+    <td><input type="text" id="rm-${i}" data-f="match" value="${esc(r.match)}"></td>
+    <td><input type="text" id="rc-${i}" data-f="comment" value="${esc(r.comment)}"></td>
+    <td><select id="rk-${i}" data-f="kind"><option value="auto" ${r.kind!=='lena'&&r.kind!=='cash'?'selected':''}>По знаку суммы</option><option value="cash" ${r.kind==='cash'?'selected':''}>Касса</option><option value="lena" ${r.kind==='lena'?'selected':''}>Лена</option></select></td>
+    <td><input type="text" class="who" id="rw-${i}" data-f="who" value="${esc(r.who||'')}"></td>
+    <td class="chk"><input type="checkbox" id="rt-${i}" data-f="topork" ${r.topork?'checked':''} aria-label="С топорка"></td>
+    <td><button class="del" type="button" data-del="${i}" aria-label="Удалить правило">×</button></td></tr>`).join('');
+}
+$('rulesRows').addEventListener('change',e=>{const tr=e.target.closest('tr');const r=rules[+tr.dataset.i];const f=e.target.dataset.f;r[f]=f==='topork'?e.target.checked:e.target.value;saveRules()});
+$('rulesRows').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(!b)return;rules.splice(+b.dataset.del,1);saveRules();renderRules()});
+$('ruleAdd').onclick=()=>{rules.push({match:'',comment:'',kind:'auto',who:'топ',topork:false});saveRules();renderRules();$('rm-'+(rules.length-1)).focus()};
+// миграция: старое правило «Выдача наличных» → Касса
+rules.forEach(r=>{if(r.match==='Выдача наличных'&&r.kind==='auto')r.kind='cash'});
+$('ruleReset').onclick=()=>{rules=DEFAULT_RULES.map(r=>({...r}));saveRules();renderRules();toast('Стандартные правила восстановлены')};
+$('ruleApply').onclick=()=>{state.rows=state.rows.map(r=>r.manual?r:({...r,...classify(r)}));renderAll();toast('Правила применены к операциям')};
+
+// ---------- загрузка PDF ----------
+if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'}
+async function readPdf(file){
+  const doc=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;
+  const pages=[];
+  for(let p=1;p<=doc.numPages;p++){const tc=await (await doc.getPage(p)).getTextContent();pages.push(tc.items.map(i=>({x:i.transform[4],y:i.transform[5],w:i.width,s:i.str})))}
+  return parseSberStatement(pages);
+}
+async function handleFiles(list){
+  const err=$('err');err.hidden=true;
+  const files=[...list].filter(f=>/\.pdf$/i.test(f.name)||f.type==='application/pdf');
+  if(!files.length){err.textContent='Нужен PDF-файл выписки СберБанка.';err.hidden=false;return}
+  if(!window.pdfjsLib){err.textContent='Не загрузилась библиотека чтения PDF. Проверьте интернет и обновите страницу.';err.hidden=false;return}
+  if(state.demo){state={files:[],rows:[],fact1c:'',demo:false}}
+  const ops=state.rows.map(r=>r);const bad=[];
+  for(const f of files){
+    try{
+      const res=await readPdf(f);
+      if(!res.ops.length){bad.push(f.name);continue}
+      const idx=state.files.length;state.files.push({name:f.name,head:res.head});
+      res.ops.forEach(o=>o.file=idx);ops.push(...res.ops);
+    }catch(e){bad.push(f.name)}
+  }
+  const manual=ops.filter(o=>o.manual);
+  state.rows=buildRows(ops.filter(o=>!o.manual).map(o=>({date:o.date,dateStr:o.dateStr,time:o.time,cat:o.cat,desc:o.desc,inc:o.inc,amt:o.amt,file:o.file}))).concat(manual);sortRows();
+  if(bad.length){err.textContent='Не удалось найти операции в файле: '+bad.join(', ')+'. Нужна выписка по счёту из СберБанк Онлайн в PDF.';err.hidden=false}
+  renderAll();
+  if(state.rows.length)toast('Операций загружено: '+state.rows.length);
+}
+$('file').addEventListener('change',e=>{handleFiles(e.target.files);e.target.value=''});
+const drop=$('drop');
+['dragenter','dragover'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add('over')}));
+['dragleave','drop'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove('over')}));
+drop.addEventListener('drop',e=>handleFiles(e.dataTransfer.files));
+$('btnClear').onclick=()=>{state={files:[],rows:[],fact1c:'',demo:false};renderAll();toast('Очищено')};
+
+// ---------- Excel ----------
+const MONTHS=['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+function periodName(){
+  const f=state.files[0]?.head;const d=f?.from||state.rows[0]?.dateStr;if(!d)return'';
+  const [,m,y]=d.split('.');return MONTHS[+m-1]+' '+y;
+}
+async function buildXlsx(){
+  const wb=new ExcelJS.Workbook();wb.creator='IRIX CASH';
+  const p=periodName();
+  const ws=wb.addWorksheet(p?p[0].toUpperCase()+p.slice(1):'Отчёт',{views:[{state:'frozen',ySplit:3}]});
+  ws.columns=[{width:5},{width:14},{width:12},{width:14},{width:14},{width:14},{width:26},{width:50},{width:8},{width:12}];
+  const accs=state.files.map(f=>[f.head.owner,f.head.account?'счёт ****'+f.head.account.slice(-4):''].filter(Boolean).join(', ')).join('; ');
+  ws.getCell('A1').value=`Отчёт по кассе${p?' за '+p:''} — выписка СберБанк${accs?' ('+accs+')':''}`;
+  ws.getCell('A1').font={bold:true,size:12};
+  const heads=['№','Лена','Возвраты','Поступления','Касса','Расходы','Комментарий','Комментарий банка','Чьё','Дата'];
+  const thin={style:'thin',color:{argb:'FF999999'}};const box={top:thin,bottom:thin,left:thin,right:thin};
+  const fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFD9E1F2'}};
+  const hr=ws.getRow(3);
+  heads.forEach((h,i)=>{const c=hr.getCell(i+1);c.value=h;c.font={bold:true};c.fill=fill;c.border=box;c.alignment={horizontal:'center',vertical:'middle',wrapText:true}});
+  const NF='#,##0.00;-#,##0.00;""';
+  const colIdx={lena:2,ret:3,inc:4,cash:5,exp:6};
+  const first=4;let r=first;
+  state.rows.forEach((o,n)=>{
+    const row=ws.getRow(r);
+    row.getCell(1).value=n+1;
+    row.getCell(colIdx[o.col]).value=r2(signed(o));
+    row.getCell(7).value=o.comment;
+    row.getCell(8).value=o.bank||(o.manual?'добавлено вручную':'');row.getCell(8).alignment={wrapText:true,vertical:'top'};
+    row.getCell(9).value=o.who;
+    row.getCell(10).value=o.date;row.getCell(10).numFmt='DD.MM.YYYY';
+    for(let c=1;c<=10;c++){row.getCell(c).border=box;if(c>=2&&c<=6)row.getCell(c).numFmt=NF}
+    r++;
+  });
+  const last=r-1;const {t,exList,topork}=calc();
+  const tr=ws.getRow(r);tr.getCell(1).value='Итого';
+  ['lena','ret','inc','cash','exp'].forEach(k=>{const c=tr.getCell(colIdx[k]);const L=String.fromCharCode(64+colIdx[k]);c.value={formula:`SUM(${L}${first}:${L}${last})`,result:t[k]};c.numFmt=NF});
+  for(let c=1;c<=10;c++){const x=tr.getCell(c);x.font={bold:true};x.fill=fill;x.border=box}
+  const tot=r;r+=2;
+  const put=(val,label,bold,extra)=>{const row=ws.getRow(r);const c=row.getCell(4);c.value=val;c.numFmt=NF;row.getCell(7).value=label;if(bold){c.font={bold:true};row.getCell(7).font={bold:true}}if(extra)extra(c);return r++};
+  const s0=put({formula:`D${tot}`,result:t.inc},'всего поступлений по выписке');
+  exList.forEach(([k,v])=>put(-v,`не учтено: ${k} — не с топорка`));
+  const it=put({formula:`SUM(D${s0}:D${r-1})`,result:topork},'итого получено с топорка',true);
+  const f1=parseFloat(String(state.fact1c).replace(/\s/g,'').replace(',','.'));const has=!isNaN(f1);
+  const c1=put(has?f1:null,'по данным 1С получено с топорка',false,c=>{c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFF2CC'}}});
+  put({formula:`IF(D${c1}="","",D${it}-D${c1})`,result:has?r2(topork-f1):''},'разница',true);
+  ws.pageSetup={orientation:'landscape',paperSize:9,fitToPage:true,fitToWidth:1,fitToHeight:0,printTitlesRow:'3:3',margins:{left:0.4,right:0.4,top:0.5,bottom:0.6,header:0.3,footer:0.3}};
+  ws.headerFooter={oddFooter:'&CСтраница &P из &N'};
+  return {buf:await wb.xlsx.writeBuffer(),name:`Отчет_по_кассе${p?'_'+p.replace(' ','_'):''}.xlsx`};
+}
+async function saveFile(blob,name,kind){
+  if(dl){
+    try{await dl.save({filename:name,data:blob});toast('Файл сохранён: '+name)}
+    catch(e){if(e?.code!=='declined')toast('Не удалось сохранить файл'+(e?.message?': '+e.message:''))}
+  }else{
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast('Файл сформирован: '+name);
+  }
+}
+function buildPdf(){
+  const p=periodName();const {t,exList,topork}=calc();
+  const n=v=>v?fmt(v).replace('−','-'):'';
+  const H=['№','Лена','Возвраты','Поступл.','Касса','Расходы','Комментарий','Комментарий банка','Чьё','Дата'].map(x=>({text:x,style:'th'}));
+  const body=[H];
+  state.rows.forEach((o,i)=>{const c={lena:'',ret:'',inc:'',cash:'',exp:''};c[o.col]=n(signed(o));
+    body.push([String(i+1),c.lena,c.ret,c.inc,c.cash,c.exp,o.comment,o.bank||(o.manual?'добавлено вручную':''),o.who,o.date.toLocaleDateString('ru-RU',{timeZone:'UTC'})].map((x,j)=>({text:x,alignment:j>=1&&j<=5?'right':'left'})))});
+  body.push([{text:'Итого',bold:true},...['lena','ret','inc','cash','exp'].map(k=>({text:n(t[k]),bold:true,alignment:'right'})),'','','',''].map(x=>typeof x==='string'?{text:x}:x).map(x=>({...x,fillColor:'#E3F4EC'})));
+  const f1=parseFloat(String(state.fact1c).replace(/\s/g,'').replace(',','.'));const has=!isNaN(f1);
+  const rec=[[{text:'Всего поступлений по выписке'},{text:n(t.inc),alignment:'right'}],
+    ...exList.map(([k,v])=>[{text:'не учтено: '+k,color:'#5A6B65'},{text:n(-v),alignment:'right',color:'#5A6B65'}]),
+    [{text:'Итого получено с топорка',bold:true},{text:n(topork),bold:true,alignment:'right'}],
+    [{text:'По данным 1С получено с топорка'},{text:has?n(f1):'',alignment:'right'}],
+    [{text:'Разница',bold:true},{text:has?n(r2(topork-f1))||'0,00':'',bold:true,alignment:'right'}]];
+  const accs=state.files.map(f=>[f.head.owner,f.head.account?'счёт ****'+f.head.account.slice(-4):''].filter(Boolean).join(', ')).join('; ');
+  return {pageSize:'A4',pageOrientation:'landscape',pageMargins:[28,36,28,40],
+    defaultStyle:{fontSize:8,font:'Roboto'},
+    styles:{th:{bold:true,fillColor:'#0D1B16',color:'#FFFFFF',fontSize:8},h:{fontSize:13,bold:true},sub:{fontSize:9,color:'#5A6B65'}},
+    footer:(cur,total)=>({text:`Страница ${cur} из ${total}`,alignment:'center',fontSize:8,color:'#5A6B65',margin:[0,12,0,0]}),
+    content:[{text:`Отчёт по кассе${p?' за '+p:''}`,style:'h'},{text:`Выписка СберБанк${accs?' — '+accs:''}`,style:'sub',margin:[0,2,0,10]},
+      {table:{headerRows:1,widths:[16,52,50,56,52,52,90,'*',30,46],body},layout:{hLineWidth:()=>.4,vLineWidth:()=>.4,hLineColor:()=>'#C9D4D0',vLineColor:()=>'#C9D4D0',paddingTop:()=>3,paddingBottom:()=>3}},
+      {text:'Сверка с 1С',bold:true,fontSize:10,margin:[0,14,0,6]},
+      {table:{widths:[260,90],body:rec},layout:'lightHorizontalLines'}]};
+}
+$('btnPrint').onclick=async()=>{
+  if(!state.rows.length){toast('Сначала загрузите выписку');return}
+  if(!window.pdfMake){toast('Не загрузилась библиотека PDF — обновите страницу');return}
+  const btn=$('btnPrint');btn.disabled=true;
+  try{
+    const doc=pdfMake.createPdf(buildPdf());const p=periodName();
+    const name=`Отчет_по_кассе${p?'_'+p.replace(' ','_'):''}.pdf`;
+    if(dl){const blob=await new Promise(res=>doc.getBlob(res));await saveFile(blob,name)}
+    else{try{doc.print()}catch(e){doc.download(name)}}
+  }catch(e){toast('Ошибка при подготовке печати: '+e.message)}
+  finally{btn.disabled=false}
+};
+let dl=null;
+(async()=>{try{if(window.claude?.use)dl=await window.claude.use('downloads')}catch(e){}})();
+$('btnXlsx').onclick=async()=>{
+  if(!state.rows.length){toast('Сначала загрузите выписку');return}
+  if(!window.ExcelJS){toast('Не загрузилась библиотека Excel — обновите страницу');return}
+  const btn=$('btnXlsx');btn.disabled=true;
+  try{
+    const {buf,name}=await buildXlsx();
+    const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    await saveFile(blob,name);
+  }catch(e){toast('Ошибка при формировании Excel: '+e.message)}
+  finally{btn.disabled=false}
+};
+
+// ---------- старт с примером ----------
+state={files:DEMO.files,rows:buildRows(DEMO.ops),fact1c:'',demo:true};
+renderRules();renderAll();
+</script>
