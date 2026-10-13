@@ -1,3 +1,5 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>IRIX CASH</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Unbounded:wght@500;700&display=swap">
@@ -134,6 +136,70 @@ details.rules[open] summary::before{transform:rotate(90deg)}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--on-ink);padding:10px 16px;border-radius:8px;font-weight:600;box-shadow:0 6px 24px rgba(0,0,0,.2);max-width:calc(100% - 32px)}
 .err{background:var(--bad-bg);color:var(--bad);padding:10px 12px;border-radius:8px;font-size:13px}
 footer{color:var(--muted);font-size:12px;text-align:center}
+[hidden]{display:none!important}
+.toast{z-index:80}
+.saved{font-size:12px;color:var(--good);font-weight:600;white-space:nowrap}
+/* ---------- телефон: карточки + нижняя панель редактирования ---------- */
+.cards{display:none;flex-direction:column;gap:8px}
+.card{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.card:active{background:var(--surface-2)}
+.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.card.manual{border-style:dashed;border-color:var(--accent)}
+.c-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.c-date{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.c-amt{font-weight:700;font-size:16px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.c-amt.in{color:var(--good)}
+.c-mid{display:flex;align-items:center;gap:8px;min-width:0}
+.c-cm{font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.c-cm.none{color:var(--muted);font-weight:400}
+.c-bank{color:var(--muted);font-size:12.5px;line-height:1.35}
+.c-foot{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);flex-wrap:wrap}
+.c-edit{margin-left:auto;color:var(--accent-strong);font-weight:600}
+.pillx{font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;white-space:nowrap;flex:none}
+.c-lena{--pc:var(--lena);--pb:var(--lena-bg)} .c-inc{--pc:var(--good);--pb:var(--good-bg)} .c-ret{--pc:var(--warn);--pb:var(--warn-bg)} .c-cash{--pc:var(--accent-strong);--pb:var(--accent-soft)} .c-exp{--pc:var(--bad);--pb:var(--bad-bg)}
+.pillx{color:var(--pc);background:var(--pb)}
+.cards-empty{padding:28px 16px;text-align:center;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:12px}
+
+.sheet-bg{position:fixed;inset:0;z-index:60;background:rgba(5,15,11,.5);display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);color:var(--fg);width:100%;max-width:560px;max-height:92%;overflow-y:auto;border-radius:18px 18px 0 0;padding:10px 16px 0;display:flex;flex-direction:column;gap:14px;box-shadow:0 -8px 30px rgba(0,0,0,.25)}
+.sheet::before{content:"";align-self:center;width:40px;height:4px;border-radius:2px;background:var(--line);flex:none}
+.sh-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.sh-t{font-family:var(--f-display);font-size:16px;font-weight:500}
+.sh-sub{color:var(--muted);font-size:13px;margin-top:4px;font-variant-numeric:tabular-nums}
+.sh-sub b.in{color:var(--good)}
+.sh-x{border:0;background:var(--surface-2);color:var(--fg);width:36px;height:36px;border-radius:50%;font-size:20px;line-height:1;cursor:pointer;flex:none}
+.fld{display:flex;flex-direction:column;gap:6px}
+.fld>label,.fld>.lbl{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.sheet input[type=text],.sheet input[type=date]{font:inherit;font-size:16px;width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--fg);min-height:48px}
+.sheet input[type=text]:focus,.sheet input[type=date]:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.seg button{font:inherit;font-weight:600;font-size:14px;min-height:44px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;padding:6px}
+.seg button.on{background:var(--pb);color:var(--pc);border-color:var(--pc)}
+.who-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px}
+.who-row button{font:inherit;font-weight:600;border:1.5px solid var(--line);background:var(--surface-2);color:var(--fg);border-radius:10px;padding:0 14px;cursor:pointer}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid var(--line);border-radius:10px;cursor:pointer}
+.sw small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.sw.off{opacity:.55;cursor:default}
+.sw input{width:24px;height:24px}
+.sh-bank{font-size:13px;color:var(--muted);background:var(--surface-2);border-radius:10px;padding:10px 12px}
+.sh-bank .lbl{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-bottom:3px}
+.sh-actions{position:sticky;bottom:0;display:grid;grid-template-columns:1fr 2fr;gap:8px;background:var(--surface);padding:10px 0 calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);margin-top:2px}
+.btn.big{min-height:50px;font-size:16px;justify-content:center;border-radius:12px}
+.sheet .btn.primary{background:var(--accent-strong);border-color:var(--accent-strong);color:#fff}
+.btn.danger{color:var(--bad);border-color:var(--bad-bg);background:var(--bad-bg)}
+
+@media (max-width:720px){
+  .wrap{padding-inline:12px;padding-block:12px 40px;gap:14px}
+  header.top{padding:16px}
+  .brand h1{font-size:22px}
+  header.top .actions{width:100%}
+  header.top .actions .btn{flex:1;justify-content:center;padding:10px 8px}
+  .tblwrap.ops{display:none}
+  .cards{display:flex}
+  .ops-tools .hint{display:none}
+  #btnAdd{min-height:40px;padding:8px 14px;font-size:14px}
+  .rules-body input[type=text],.rules-body select,.recon input{font-size:16px}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 <div class="wrap">
@@ -173,9 +239,11 @@ footer{color:var(--muted);font-size:12px;text-align:center}
     <div class="head-row" style="margin-bottom:10px">
       <h2 style="font-family:var(--f-display);font-size:13px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Операции</h2>
       <div class="ops-tools"><span class="hint">Комментарий, колонку и «с топорка» можно править. Свои расходы добавляйте кнопкой справа.</span>
+      <span class="saved" id="saved" aria-live="polite"></span>
       <button class="btn small accent" id="btnAdd" type="button">+ Добавить расход</button></div>
     </div>
-    <div class="tblwrap">
+    <div class="cards" id="cards"></div>
+    <div class="tblwrap ops">
       <table>
         <thead><tr><th>№</th><th>Дата</th><th style="text-align:right">Сумма</th><th>Колонка</th><th>Комментарий</th><th>Комментарий банка</th><th>Чьё</th><th title="Поступление учитывается как полученное с топорка">С топорка</th><th></th></tr></thead>
         <tbody id="rows"></tbody>
@@ -203,6 +271,7 @@ footer{color:var(--muted);font-size:12px;text-align:center}
 
   <footer>IRIX — код. данные. смысл. результат. · Irina Romanova</footer>
 </div>
+<div class="sheet-bg" id="sheetBg" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Редактирование операции"></div></div>
 <div class="toast" id="toast" hidden></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -382,11 +451,114 @@ function renderTotals(){
     <div class="r big"><span>Итого получено с топорка</span><span class="n">${fmt(topork)}</span></div>
     <div class="r"><label for="fact1c">По данным 1С получено с топорка</label><input id="fact1c" inputmode="decimal" placeholder="введите сумму" value="${esc(state.fact1c)}"></div>
     <div class="r big"><span>Разница</span><span class="n ${has?(Math.abs(d)<0.01?'diff-ok':'diff-bad'):''}" id="diffv">${has?fmt(d):'—'}</span></div>`;
+  $('fact1c').addEventListener('input',e=>{state.fact1c=e.target.value;saveState()});
   $('fact1c').addEventListener('change',e=>{state.fact1c=e.target.value;renderTotals()});
+  saveState();
 }
+// ---------- автосохранение в браузере ----------
+const STATE_KEY='irixcash.state.v1';
+function saveState(){
+  try{
+    if(!state.rows.length&&!state.files.length){localStorage.removeItem(STATE_KEY);$('saved').textContent='';return}
+    localStorage.setItem(STATE_KEY,JSON.stringify({files:state.files,fact1c:state.fact1c,demo:state.demo,
+      rows:state.rows.map(r=>({...r,date:r.date.toISOString()}))}));
+    if(!state.demo)$('saved').textContent='✓ Сохранено '+new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+    else $('saved').textContent='';
+  }catch(e){}
+}
+function loadState(){
+  try{
+    const s=JSON.parse(localStorage.getItem(STATE_KEY));
+    if(s&&Array.isArray(s.rows)&&s.rows.length){s.rows.forEach(r=>r.date=new Date(r.date));return{files:s.files||[],rows:s.rows,fact1c:s.fact1c||'',demo:!!s.demo}}
+  }catch(e){}
+  return null;
+}
+const isPhone=()=>window.matchMedia('(max-width:720px)').matches;
+// ---------- карточки для телефона ----------
+const money=n=>Math.abs(n).toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});
+function renderCards(){
+  const box=$('cards');
+  if(!state.rows.length){box.innerHTML='<div class="cards-empty">Загрузите PDF-выписку или добавьте расход</div>';return}
+  box.innerHTML=state.rows.map((r,i)=>{const plus=r.col==='inc'||r.col==='ret';
+    return `<button type="button" class="card${r.manual?' manual':''}" data-open="${i}">
+      <span class="c-top"><span class="c-date">${i+1}. ${esc(r.dateStr)}</span><span class="c-amt ${plus?'in':''}">${plus?'+':'−'}${money(r.amt)}</span></span>
+      <span class="c-mid"><span class="pillx c-${r.col}">${COLS[r.col]}</span><span class="c-cm${r.comment?'':' none'}">${esc(r.comment||'без комментария')}</span></span>
+      ${r.bank?`<span class="c-bank">${esc(r.bank)}</span>`:''}
+      <span class="c-foot"><span>чьё: ${esc(r.who||'—')}</span>${r.topork?'<span class="chip ok">с топорка</span>':''}${r.manual?'<span class="tag">вручную</span>':''}<span class="c-edit">Изменить ›</span></span>
+    </button>`}).join('');
+}
+$('cards').addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b)openSheet(+b.dataset.open)});
+// ---------- нижняя панель редактирования ----------
+let editIdx=-1,draft=null,isNew=false;
+function openSheet(i,newRow){
+  isNew=!!newRow;editIdx=isNew?-1:i;draft=isNew?newRow:{...state.rows[i]};
+  renderSheet();$('sheetBg').hidden=false;document.body.style.overflow='hidden';
+  if(isNew)setTimeout(()=>$('shAmt')?.focus(),60);
+}
+function closeSheet(){$('sheetBg').hidden=true;document.body.style.overflow='';editIdx=-1;draft=null;isNew=false}
+function syncDraft(){
+  if(!draft)return;
+  const v=id=>$(id)?$(id).value:null;
+  if(v('shCm')!==null)draft.comment=v('shCm');
+  if(v('shWho')!==null)draft.who=v('shWho');
+  if(v('shBank')!==null)draft.bank=v('shBank');
+  if(v('shAmt')!==null)draft._amt=v('shAmt');
+  if(v('shDate')!==null)draft._date=v('shDate');
+  if($('shTp'))draft.topork=$('shTp').checked;
+}
+function renderSheet(){
+  const r=draft,n=isNew?state.rows.length+1:editIdx+1,canTp=r.col==='inc';
+  const amtVal=r._amt!=null?r._amt:(r.amt?String(r.amt).replace('.',','):'');
+  const dateVal=r._date||isoDate(r.date);
+  const comments=[...new Set(state.rows.map(x=>x.comment).filter(Boolean))];
+  $('sheet').innerHTML=`
+    <div class="sh-head"><div><div class="sh-t">${isNew?'Новый расход':'Операция № '+n}</div>
+      ${r.manual?'':`<div class="sh-sub">${esc(r.dateStr)} · <b class="${r.inc?'in':''}">${r.inc?'+':'−'}${money(r.amt)}</b></div>`}</div>
+      <button type="button" class="sh-x" data-act="cancel" aria-label="Закрыть">×</button></div>
+    ${r.manual?`<div class="fld"><label for="shAmt">Сумма, ₽</label><input type="text" id="shAmt" inputmode="decimal" value="${esc(amtVal)}" placeholder="0,00"></div>
+      <div class="fld"><label for="shDate">Дата</label><input type="date" id="shDate" value="${dateVal}"></div>`:''}
+    <div class="fld"><span class="lbl">Колонка</span><div class="seg">${Object.entries(COLS).map(([k,v])=>`<button type="button" class="c-${k}${k===r.col?' on':''}" data-col="${k}" aria-pressed="${k===r.col}">${v}</button>`).join('')}</div></div>
+    <div class="fld"><label for="shCm">Комментарий</label><input type="text" id="shCm" list="cmList" value="${esc(r.comment)}" placeholder="например, Алексей" enterkeyhint="done" autocomplete="off"></div>
+    <div class="fld"><label for="shWho">Чьё</label><div class="who-row"><input type="text" id="shWho" value="${esc(r.who)}" enterkeyhint="done" autocomplete="off"><button type="button" data-who="топ">топ</button><button type="button" data-who="лена">лена</button></div></div>
+    <label class="sw${canTp?'':' off'}" for="shTp"><span><b>С топорка</b><small>${canTp?'Поступление войдёт в «получено с топорка»':'Только для колонки «Поступления»'}</small></span>
+      <input type="checkbox" id="shTp" ${r.topork&&canTp?'checked':''} ${canTp?'':'disabled'}></label>
+    ${r.manual?`<div class="fld"><label for="shBank">Описание</label><input type="text" id="shBank" value="${esc(r.bank)}" placeholder="необязательно" enterkeyhint="done"></div>`
+      :(r.bank?`<div class="sh-bank"><span class="lbl">Комментарий банка</span>${esc(r.bank)}</div>`:'')}
+    <div class="sh-actions">${r.manual&&!isNew?'<button type="button" class="btn big danger" data-act="del">Удалить</button>':'<button type="button" class="btn big" data-act="cancel">Отмена</button>'}
+      <button type="button" class="btn big primary" data-act="save">Сохранить</button></div>
+    <datalist id="cmList">${comments.map(c=>`<option value="${esc(c)}">`).join('')}</datalist>`;
+}
+function saveSheet(){
+  syncDraft();const r=draft;
+  if(r.manual){
+    const v=parseFloat(String(r._amt??r.amt).replace(/[\s ]/g,'').replace(',','.'));
+    if(isNaN(v)||!v){toast('Введите сумму');$('shAmt')?.focus();return}
+    r.amt=Math.abs(r2(v));
+    if(r._date){const [y,m,d]=r._date.split('-').map(Number);r.date=new Date(Date.UTC(y,m-1,d));r.dateStr=r.date.toLocaleDateString('ru-RU',{timeZone:'UTC'})}
+    r.inc=r.col==='inc'||r.col==='ret';
+  }
+  delete r._amt;delete r._date;
+  r.comment=(r.comment||'').trim();r.who=(r.who||'').trim();if(r.manual)r.bank=(r.bank||'').trim();
+  if(r.col!=='inc')r.topork=false;
+  if(isNew)state.rows.push(r);else state.rows[editIdx]=r;
+  closeSheet();sortRows();renderRows();renderTotals();toast('Сохранено');
+}
+$('sheet').addEventListener('click',e=>{
+  const c=e.target.closest('[data-col]'),w=e.target.closest('[data-who]'),a=e.target.closest('[data-act]');
+  if(c){syncDraft();draft.col=c.dataset.col;if(draft.col!=='inc')draft.topork=false;if(draft.col==='lena'&&draft.who==='топ')draft.who='лена';renderSheet();return}
+  if(w){$('shWho').value=w.dataset.who;return}
+  if(!a)return;
+  if(a.dataset.act==='save')saveSheet();
+  else if(a.dataset.act==='cancel')closeSheet();
+  else if(a.dataset.act==='del'){state.rows.splice(editIdx,1);closeSheet();renderRows();renderTotals();toast('Операция удалена')}
+});
+$('sheet').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'&&e.target.type!=='checkbox'){e.preventDefault();saveSheet()}});
+$('sheetBg').addEventListener('click',e=>{if(e.target===$('sheetBg'))closeSheet()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('sheetBg').hidden)closeSheet()});
 function isoDate(d){return d.toISOString().slice(0,10)}
 function renderRows(){
   const tb=$('rows');
+  renderCards();
   if(!state.rows.length){tb.innerHTML='<tr><td colspan="9" class="empty">Загрузите PDF-выписку или добавьте расход вручную</td></tr>';return}
   tb.innerHTML=state.rows.map((r,i)=>{
     const sign=(r.col==='inc'||r.col==='ret')?'+':'−';
@@ -414,7 +586,19 @@ function addManual(){
   state.rows.push(r);sortRows();renderRows();renderTotals();
   const el=$('am-'+r.id);if(el){el.focus();el.scrollIntoView({block:'center',behavior:'smooth'})}
 }
-$('btnAdd').onclick=addManual;
+$('btnAdd').onclick=()=>{
+  if(!isPhone())return addManual();
+  const last=state.rows.length?state.rows[state.rows.length-1].date:new Date(Date.UTC(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()));
+  const r={id:manualSeq++,manual:true,date:new Date(last),dateStr:'',time:'99:99',cat:'',desc:'',bank:'',inc:false,amt:0,col:'exp',comment:'',who:'топ',topork:false,file:-1};
+  r.dateStr=r.date.toLocaleDateString('ru-RU',{timeZone:'UTC'});
+  openSheet(-1,r);
+};
+let typeT=null;
+$('rows').addEventListener('input',e=>{
+  const f=e.target.dataset.f;if(f!=='comment'&&f!=='who'&&f!=='bank')return;
+  const tr=e.target.closest('tr');if(!tr)return;state.rows[+tr.dataset.i][f]=e.target.value;
+  clearTimeout(typeT);typeT=setTimeout(()=>{renderTotals();renderCards()},400);
+});
 $('rows').addEventListener('click',e=>{const b=e.target.closest('[data-delrow]');if(!b)return;state.rows.splice(+b.dataset.delrow,1);renderRows();renderTotals();toast('Операция удалена')});
 $('rows').addEventListener('change',e=>{
   const tr=e.target.closest('tr');if(!tr)return;const r=state.rows[+tr.dataset.i];const f=e.target.dataset.f;
@@ -436,6 +620,7 @@ function renderRules(){
     <td class="chk"><input type="checkbox" id="rt-${i}" data-f="topork" ${r.topork?'checked':''} aria-label="С топорка"></td>
     <td><button class="del" type="button" data-del="${i}" aria-label="Удалить правило">×</button></td></tr>`).join('');
 }
+$('rulesRows').addEventListener('input',e=>{if(e.target.type!=='text')return;const tr=e.target.closest('tr');rules[+tr.dataset.i][e.target.dataset.f]=e.target.value;saveRules()});
 $('rulesRows').addEventListener('change',e=>{const tr=e.target.closest('tr');const r=rules[+tr.dataset.i];const f=e.target.dataset.f;r[f]=f==='topork'?e.target.checked:e.target.value;saveRules()});
 $('rulesRows').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(!b)return;rules.splice(+b.dataset.del,1);saveRules();renderRules()});
 $('ruleAdd').onclick=()=>{rules.push({match:'',comment:'',kind:'auto',who:'топ',topork:false});saveRules();renderRules();$('rm-'+(rules.length-1)).focus()};
@@ -589,6 +774,8 @@ $('btnXlsx').onclick=async()=>{
 };
 
 // ---------- старт с примером ----------
-state={files:DEMO.files,rows:buildRows(DEMO.ops),fact1c:'',demo:true};
+// если в этом браузере уже работали — открываем сохранённую работу, иначе пример
+state=loadState()||{files:DEMO.files,rows:buildRows(DEMO.ops),fact1c:'',demo:true};
+manualSeq=Math.max(100000,...state.rows.map(r=>(+r.id||0)+1));
 renderRules();renderAll();
 </script>
