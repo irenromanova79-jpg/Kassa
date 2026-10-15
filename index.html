@@ -521,7 +521,7 @@ async function api(body,url=cfg.url,key=cfg.key){
     return j;
   }catch(e){
     if(e.name==='AbortError')throw new Error('сервис не ответил за 30 секунд');
-    if(e instanceof TypeError)throw new Error('нет связи с сервисом');
+    if(e instanceof TypeError)throw new Error(navigator.onLine===false?'нет интернета':'сервис не ответил. Откройте ссылку /exec в отдельной вкладке: должна появиться строка {"ok":true,"app":"IRIX CASH"…}. Если вместо неё вход в Google — в развёртывании доступ не «Все»; если ошибка — запустите setup и сделайте новую версию развёртывания');
     throw e;
   }finally{clearTimeout(t)}
 }
@@ -601,9 +601,10 @@ function openCfg(msg,v){
 }
 function closeCfg(){$('cfgBg').hidden=true;document.body.style.overflow=''}
 async function connect(){
-  const url=$('cfUrl').value.trim(),key=$('cfKey').value.trim(),me=$('cfMe').value.trim();
+  const url=$('cfUrl').value.trim(),key=$('cfKey').value.trim().replace(/^['"«“]+|['"»”]+$/g,''),me=$('cfMe').value.trim();
   const typed={url,key,me};
   if(!/^https:\/\/script\.google(usercontent)?\.com\/.+/.test(url))return openCfg({bad:true,text:'Нужна ссылка вида https://script.google.com/macros/s/…/exec'},typed);
+  if(/\/home\/projects\/|\/edit(\?|$)/.test(url))return openCfg({bad:true,text:'Это ссылка на редактор скрипта, а нужна ссылка веб-приложения. В Apps Script: Начать развёртывание → Управление развёртываниями → скопируйте «URL веб-приложения» (заканчивается на /exec).'},typed);
   if(!/\/exec$/.test(url))return openCfg({bad:true,text:'Ссылка должна заканчиваться на /exec. Скорее всего, при копировании потерялся хвост.'},typed);
   if(!key)return openCfg({bad:true,text:'Впишите ключ доступа: он такой же, как в ACCESS_KEY в скрипте.'},typed);
   const btn=document.querySelector('[data-c="go"]');btn.disabled=true;btn.textContent='Проверяю…';
